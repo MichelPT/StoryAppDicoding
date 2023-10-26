@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StoryApp</string>
+    <string name="signup">Sign Up</string>
+    <string name="login">Log In</string>
+    <string name="message_welcome_page">Would like to learn Android, iOS, Machine Learning, Cloud, Front-End, Back-End, and other IT fields? Dicoding got you!</string>
+    <string name="title_welcome_page">Welcome to Dicoding\!</string>
+    <string name="title_signup_page">Please fill in the blank fields</string>
+    <string name="message_login_page">Input your data first!</string>
+    <string name="title_login_page">Ready to upgrade your skill?</string>
+    <string name="name">Name</string>
+    <string name="logout">Exit</string>
+    <string name="description">This is the story description</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="upload">Upload</string>
+    <string name="empty_image_warning">Please insert picture first</string>
+    <string name="floating_button">Add story</string>
+    <string name="et_description">Please fill in your story description</string>
+    <string name="ok">Yes</string>
+    <string name="cancel">Cancel</string>
+    <string name="error_message">Error occurred\! %1$s</string>
+    <string name="logout_title">Logout</string>
+    <string name="logout_msg">Are you sure?</string>
+    <string name="Language">Language</string>
+    <string name="invalid_email">Invalid email format</string>
+    <string name="invalid_password">Must contain minimum of 8 characters</string>
+    <string name="error_description">Please check your connection!</string>
+    <string name="maps">Maps</string>
+</resources>

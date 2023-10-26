@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/maps"
+        android:title="@string/maps"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/maps"
+        />
+    <item
+        android:id="@+id/language"
+        android:title="@string/Language"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/language"
+        />
+    <item
+        android:id="@+id/logout"
+        android:title="@string/logout"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/logout"
+        />
+</menu>
