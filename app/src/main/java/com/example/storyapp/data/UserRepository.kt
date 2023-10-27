@@ -51,10 +51,10 @@ class UserRepository private constructor(
     fun getStoriesPager(): LiveData<PagingData<ListStoryItem>>{
         return Pager(
             config = PagingConfig(
-                pageSize = 5
+                pageSize = 3
             ),
             pagingSourceFactory = {
-                StoryPagingSource()
+                StoryPagingSource(apiService)
             }
         ).liveData
     }

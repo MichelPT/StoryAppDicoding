@@ -2,10 +2,8 @@ package com.example.storyapp.view.main
 
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -13,19 +11,20 @@ import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.storyapp.R
+import com.example.storyapp.adapter.LoadingStateAdapter
 import com.example.storyapp.adapter.StoryListAdapter
 import com.example.storyapp.data.response.ListStoryItem
 import com.example.storyapp.databinding.ActivityMainBinding
-import com.example.storyapp.di.Injection
 import com.example.storyapp.view.ViewModelFactory
 import com.example.storyapp.view.detail.DetailActivity
 import com.example.storyapp.view.maps.MapsActivity
-import com.example.storyapp.view.signup.SignupActivity
 import com.example.storyapp.view.upload.UploadActivity
 import com.example.storyapp.view.welcome.WelcomeActivity
+import okhttp3.internal.notify
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private var _mainActivityBinding: ActivityMainBinding? = null
     private val binding get() = _mainActivityBinding
     private lateinit var detailAdapter: StoryListAdapter
+    private lateinit var loadingAdapter: LoadingStateAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,10 +46,10 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, WelcomeActivity::class.java))
                 finish()
             } else {
+                showRecycleView()
                 setupView()
             }
         }
-        showRecycleView()
     }
 
     private fun setupView() {
@@ -65,25 +65,11 @@ class MainActivity : AppCompatActivity() {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN
             )
         }
-//        viewModel.getStories()
-//        viewModel.isError.observe(this) { isError ->
-//            if (isError) {
-//                binding?.tvError?.text = getString(R.string.error_message, viewModel.errorMessage)
-//                binding?.tvError?.visibility = View.VISIBLE
-//                binding?.errorImage?.visibility = View.VISIBLE
-//                binding?.floatingButton?.visibility = View.GONE
-//            } else {
-//                binding?.errorImage?.visibility = View.GONE
-//                binding?.tvError?.visibility = View.GONE
-//                viewModel.listUsers.observe(this) { consumerUsers ->
-//                    setStoriesList(consumerUsers)
-//                }
-//                Log.d("mainactivity", "stories consumed")
-//            }
-//        }
+        getPagerData()
         viewModel.isLoading.observe(this) {
             showLoading(it)
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -137,28 +123,41 @@ class MainActivity : AppCompatActivity() {
         binding?.rvStory?.layoutManager = layoutManager
         val itemDecoration = DividerItemDecoration(this, layoutManager.orientation)
         binding?.rvStory?.addItemDecoration(itemDecoration)
+
         detailAdapter = StoryListAdapter()
-        binding?.rvStory?.adapter = detailAdapter
         detailAdapter.setOnItemClickCallback(object : StoryListAdapter.OnItemClickCallBack {
-            override fun onItemClicked(profile: ListStoryItem) {
+            override fun onItemClicked(story: ListStoryItem) {
                 val moveStoryDetail = Intent(this@MainActivity, DetailActivity::class.java)
-                moveStoryDetail.putExtra("Story", profile)
+                moveStoryDetail.putExtra("Story", story)
                 startActivity(moveStoryDetail)
             }
-        }
-        )
-    }
+        })
 
-//    private fun setStoriesList(consumerStories: List<ListStoryItem>) {
-//        detailAdapter.submitList(consumerStories)
-//    }
+        binding?.rvStory?.adapter = detailAdapter
+    }
 
     private fun getPagerData() {
         val adapter = StoryListAdapter()
-        binding?.rvStory?.adapter = adapter
-        viewModel.storyPager.observe(this) {
-            adapter.submitData(lifecycle, it)
+        binding?.rvStory?.adapter = adapter.withLoadStateFooter(
+            footer = LoadingStateAdapter {
+                adapter.retry()
+            }
+        )
+        viewModel.storyPager.observe(this) { story ->
+
+            if (story == null) {
+                binding?.tvError?.text = getString(R.string.error_message, viewModel.errorMessage)
+                binding?.errorImage?.visibility = View.VISIBLE
+                binding?.tvError?.visibility = View.VISIBLE
+                binding?.rvStory?.visibility = View.INVISIBLE
+            } else {
+                binding?.errorImage?.visibility = View.INVISIBLE
+                binding?.tvError?.visibility = View.INVISIBLE
+                showLoading(false)
+                adapter.submitData(lifecycle, story)
+            }
         }
+
     }
 
     private fun showLoading(isLoading: Boolean) {

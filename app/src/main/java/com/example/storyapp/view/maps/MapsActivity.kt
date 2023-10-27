@@ -30,18 +30,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        supportActionBar?.hide()
+
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        viewModel.getStoriesWithLocation()
     }
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        viewModel.getStoriesWithLocation()
         viewModel.listStoryLocations.observe(this){storyList->
             storyList.forEach { story->
-                val latLng = LatLng(story.lat!!, story.lon!!)
-                mMap.addMarker(MarkerOptions().position(latLng).title(story.name).snippet(story.description))
-                boundsBuilder.include(latLng)
+                if (story.lat != null && story.lon!=null){
+                    val latLng = LatLng(story.lat!!, story.lon!!)
+                    mMap.addMarker(MarkerOptions().position(latLng).title(story.name).snippet(story.description))
+                    boundsBuilder.include(latLng)
+                }
             }
             val bounds: LatLngBounds = boundsBuilder.build()
             mMap.animateCamera(
